@@ -14,6 +14,15 @@ return {
       local maps = opts.mappings
       maps.n["<Leader>h"] = false
       maps.n["<Leader>n"] = false
+      maps.n["<Leader>o"] = false
+
+      --lsp
+      maps.n["gra"] = false
+      maps.x["gra"] = false
+      maps.n["grn"] = false
+      maps.n["grr"] = false
+      maps.n["<leader>lr"] = { function() vim.lsp.buf.rename() end, desc = "vim.lsp.buf.rename()" }
+      maps.n["gr"] = { function() vim.lsp.buf.references() end, desc = "vim.lsp.buf.references()" }
 
       -- Toggle Term
       maps.n["<Leader>tf"] = false
