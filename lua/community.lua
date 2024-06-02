@@ -27,7 +27,7 @@ return {
   { import = "astrocommunity.recipes.neovide" }, -- for scaling C- C+ C0
   { import = "astrocommunity.recipes.telescope-nvchad-theme" },
   { import = "astrocommunity.terminal-integration.vim-tmux-yank" },
-  { import = "astrocommunity.test.neotest" },
+  -- { import = "astrocommunity.test.neotest" },
 
   -- import/override with your plugins folder
 }
