@@ -1,12 +1,13 @@
 return {
   "xiyaowong/transparent.nvim",
-  event = "VeryLazy",
+  enabled = not vim.g.neovide,
+  event = false,
   config = function()
     local transparent = require "transparent"
     transparent.setup {
       extra_groups = {
-        "NormalFloat",
-        "NvimTreeNormal",
+        -- "NormalFloat",
+        -- "NvimTreeNormal",
       },
     }
     transparent.clear_prefix "BufferLine"
