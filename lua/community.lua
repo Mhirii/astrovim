@@ -5,15 +5,19 @@
 ---@type LazySpec
 return {
   "AstroNvim/astrocommunity",
+  { import = "astrocommunity.game.leetcode-nvim" },
+
   { import = "astrocommunity.keybinding.nvcheatsheet-nvim" },
 
   -- { import = "astrocommunity.lsp.garbage-day-nvim" },
   { import = "astrocommunity.lsp.ts-error-translator-nvim" },
 
-  { import = "astrocommunity.motion.harpoon" },
   { import = "astrocommunity.motion.marks-nvim" },
 
+  { import = "astrocommunity.neovim-lua-development.lazydev-nvim" },
+
   { import = "astrocommunity.pack.bash" },
+  { import = "astrocommunity.pack.cpp" },
   { import = "astrocommunity.pack.docker" },
   { import = "astrocommunity.pack.go" },
   { import = "astrocommunity.pack.html-css" },
