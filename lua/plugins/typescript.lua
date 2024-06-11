@@ -17,19 +17,16 @@ local function decode_json(filename)
   return json
 end
 
-local format_filetypes = { "javascript", "javascriptreact", "typescript", "typescriptreact" }
-
 local function check_json_key_exists(json, ...) return vim.tbl_get(json, ...) ~= nil end
 local lsp_rooter, prettierrc_rooter
-local has_prettier = function(bufnr)
+
+local function has_prettier(bufnr)
   if type(bufnr) ~= "number" then bufnr = vim.api.nvim_get_current_buf() end
   local rooter = require "astrocore.rooter"
   if not lsp_rooter then
     lsp_rooter = rooter.resolve("lsp", {
       ignore = {
-        servers = function(client)
-          return not vim.tbl_contains({ "vtsls", "typescript-tools", "volar", "eslint", "tsserver" }, client.name)
-        end,
+        servers = function(client) return not vim.tbl_contains({ "eslint" }, client.name) end,
       },
     })
   end
@@ -66,13 +63,32 @@ local has_prettier = function(bufnr)
   return prettier_dependency or next(prettierrc_rooter(bufnr))
 end
 
-local null_ls_formatter = function(params)
-  if vim.tbl_contains(format_filetypes, params.filetype) then return has_prettier(params.bufnr) end
+local function has_biome()
+  local bufnr = vim.api.nvim_get_current_buf()
+  local rooter = require "astrocore.rooter"
+
+  local biomejson_rooter = rooter.resolve {
+    "biome.json",
+  }
+
+  return next(biomejson_rooter(bufnr))
+end
+
+local biome_format_filetypes = { "javascript", "javascriptreact", "typescript", "typescriptreact", "json", "jsonc" }
+local prettier_format_filetypes = { "javascript", "javascriptreact", "typescript", "typescriptreact" }
+
+local function null_ls_formatter(params)
+  -- prefer biome for the file types it can format
+  if has_biome() then return not vim.tbl_contains(biome_format_filetypes, params.filetype) end
+
+  if vim.tbl_contains(prettier_format_filetypes, params.filetype) then return has_prettier(params.bufnr) end
   return true
 end
+
 local conform_formatter = function(bufnr) return has_prettier(bufnr) and { "prettierd" } or {} end
 
 return {
+
   { import = "astrocommunity.pack.json" },
   { import = "astrocommunity.lsp.nvim-lsp-file-operations" },
   {
@@ -133,17 +149,18 @@ return {
       },
     },
   },
+
   {
     "williamboman/mason-lspconfig.nvim",
     opts = function(_, opts)
-      opts.ensure_installed = require("astrocore").list_insert_unique(opts.ensure_installed, { "vtsls", "eslint" })
+      opts.ensure_installed =
+        require("astrocore").list_insert_unique(opts.ensure_installed, { "vtsls", "eslint", "biome" })
     end,
   },
   {
     "jay-babu/mason-null-ls.nvim",
     optional = true,
     opts = function(_, opts)
-      opts.ensure_installed = require("astrocore").list_insert_unique(opts.ensure_installed, { "prettierd" })
       if not opts.handlers then opts.handlers = {} end
 
       opts.handlers.prettierd = function(source_name, methods)
@@ -159,8 +176,16 @@ return {
     optional = true,
     opts = function(_, opts)
       if not opts.formatters_by_ft then opts.formatters_by_ft = {} end
-      for _, filetype in ipairs(format_filetypes) do
-        opts.formatters_by_ft[filetype] = conform_formatter
+
+      for _, filetype in ipairs(biome_format_filetypes) do
+        opts.formatters_by_ft[filetype] = function()
+          -- let the biome lsp handle this
+          if has_biome() then return {} end
+
+          if vim.tbl_contains(prettier_format_filetypes, filetype) and has_prettier() then return { "prettierd" } end
+
+          return {}
+        end
       end
     end,
   },
