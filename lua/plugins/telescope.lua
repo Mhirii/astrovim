@@ -1,7 +1,7 @@
 return {
   {
     "nvim-telescope/telescope.nvim",
-    dependencies = {
+    ependencies = {
       {
         "AstroNvim/astrocore",
         opts = function(_, opts)
@@ -10,7 +10,6 @@ return {
 
           maps.n["<Leader>s"] = vim.tbl_get(opts, "_map_sections", "f")
 
-          maps.n["<Leader>h"] = false
           local is_available = astro.is_available
           maps.n["<Leader>/"] = { function() require("telescope.builtin").live_grep() end, desc = "Search words" }
 
@@ -117,25 +116,32 @@ return {
         opts = function(_, opts)
           local maps = opts.mappings
           maps.n["<Leader>f"] = {
-            function() require("telescope").extensions.smart_open.smart_open { cwd_only = true, filename_first = true } end,
-            desc = "Smart Open",
+            function()
+              local telescope = require "telescope.builtin"
+              telescope.find_files {
+                hidden = true,
+                no_ignore = true,
+                follow = true,
+                find_command = {
+                  "fd",
+                  "--type",
+                  "f",
+                  "--hidden",
+                  "--no-ignore",
+                  "--exclude",
+                  ".git",
+                  "--exclude",
+                  "node_modules",
+                  "--exclude",
+                  "tmp",
+                },
+              }
+            end,
+            desc = "Find File",
           }
         end,
       },
     },
-    config = function()
-      local telescope = require "telescope"
-      telescope.load_extension "smart_open"
-      telescope.setup {
-        extensions = {
-          smart_open = {
-            match_algorithm = "fzf",
-            disable_devicons = false,
-            ignore_patterns = { "*.git/*", "*/tmp/*", "*/node_modules/*" },
-          },
-        },
-      }
-    end,
   },
   {
     "2kabhishek/nerdy.nvim",
