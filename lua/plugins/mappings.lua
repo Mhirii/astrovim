@@ -12,7 +12,6 @@ return {
     "AstroNvim/astrocore",
     opts = function(_, opts)
       local maps = opts.mappings
-      maps.n["<Leader>h"] = false
       maps.n["<Leader>n"] = false
       maps.n["<Leader>o"] = false
 
