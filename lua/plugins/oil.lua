@@ -8,7 +8,7 @@ return {
         opts = {
           mappings = {
             n = {
-              ["<c-o>"] = { function() require("oil").open() end, desc = "Open folder in Oil" },
+              ["<M-o>"] = { function() require("oil").open() end, desc = "Open folder in Oil" },
             },
           },
           autocmds = {
