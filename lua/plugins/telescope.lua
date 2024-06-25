@@ -1,7 +1,7 @@
 return {
   {
     "nvim-telescope/telescope.nvim",
-    ependencies = {
+    dependencies = {
       {
         "AstroNvim/astrocore",
         opts = function(_, opts)
@@ -9,6 +9,7 @@ return {
           local maps = opts.mappings
         end,
       },
+      { "scottmckendry/telescope-resession.nvim" },
     },
     opts = function()
       local actions = require "telescope.actions"
@@ -21,6 +22,12 @@ return {
             ["<C-P>"] = actions.move_selection_previous,
           },
           n = { q = actions.close },
+        },
+        extensions = {
+          resession = {
+            prompt_title = "Find Sessions", -- telescope prompt title
+            dir = "session", -- directory where resession stores sessions
+          },
         },
       }
     end,
